@@ -1,18 +1,4 @@
-# from langchain_openai import ChatOpenAI 
-# from langchain_core.prompts import ChatPromptTemplate
-# from langchain.schema import StrOutputParser
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-# import os
-# from dotenv import load_dotenv
-
-# load_dotenv()
-
-# OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
-# llm = ChatOpenAI(model='gpt-4o-mini', openai_api_key=OPENAI_API_KEY)
-
-# system_prompt = SystemMessage(content="You are a helpful assistant.")
-
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from .vector import retriever
