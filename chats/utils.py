@@ -7,12 +7,12 @@ from django.core.cache import cache
 model = OllamaLLM(model="llama3.2")
 
 system_prompt = SystemMessage(
-    "You are an expert in answering questions about a pizza restaurant.\n\nHere are some relevant reviews:\n{reviews}\n\nHere is the question to answer:\n{question}"
+    "You are an expert assistant for an online shopping site.\n\nHere are some product details and helpful links:\n{reviews}\n\nAnswer the customer query accurately based on the product info or suggest relevant API endpoints if needed.\nHere is the question to answer:\n{question}"
 )
 
 
 issue_prompt = PromptTemplate.from_template("""
-You are an assistant that checks if a user message contains a complaint or issue.
+"You are an assistant that checks if a customer message contains a complaint or problem related to a shopping site (e.g., product issues, delivery problems, payment errors, etc.)."
 
 Message: "{message}"
 
@@ -38,13 +38,14 @@ def generate_response(user_input, history, session_id):
     )
     chain = prompt | model
 
-    reviews = retriever.invoke(user_input)
+    retrieved_docs = retriever.invoke(user_input)
 
     ai_response = chain.invoke({
-        "reviews": reviews,
+        "reviews": retrieved_docs,
         "question": user_input,
         "user_input": user_input
     })
+
 
     # Detection of issue
     issue_result = issue_chain.invoke({"message": user_input})
