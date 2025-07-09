@@ -7,8 +7,19 @@ from django.core.cache import cache
 model = OllamaLLM(model="llama3.2")
 
 system_prompt = SystemMessage(
-    "You are an expert assistant for an online shopping site.\n\nHere are some product details and helpful links:\n{reviews}\n\nAnswer the customer query accurately based on the product info or suggest relevant API endpoints if needed.\nHere is the question to answer:\n{question}"
+    """
+You are a helpful AI shopping assistant.
+
+You help users find product information using the available product data .
+
+Answer in a friendly, helpful tone. If you're unsure, say you don't have that information, answer exact that info you have about this shop.
+Here are shops products info:\n{shop_info}.
+
+Here is the question to answer:\n{question}
+"""
 )
+
+
 
 
 issue_prompt = PromptTemplate.from_template("""
@@ -41,7 +52,7 @@ def generate_response(user_input, history, session_id):
     retrieved_docs = retriever.invoke(user_input)
 
     ai_response = chain.invoke({
-        "reviews": retrieved_docs,
+        "shop_info": retrieved_docs,
         "question": user_input,
         "user_input": user_input
     })
