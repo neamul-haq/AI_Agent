@@ -2,32 +2,475 @@
 {% load widget_tweaks %}
 {% load markdownify %}
 
-{% block title %}Chat{% endblock %}
+{% block title %}Chat with AI{% endblock %}
 
 {% block content %}
-  <h2 class="mb-4">💬 Chat with AI</h2>
-  <a href="{% url 'chats:new_chat' %}" class="btn btn-primary btn-lg">Start New Chat</a>
-  <br>
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --chat-bg: #fafafa;
+        --bubble-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --border-radius: 16px;
+    }
 
-  <div class="mb-4 border rounded p-3 bg-white" style="height: 400px; overflow-y: auto;">
-    {% for msg in chat_history %}
-      <div class="mb-3">
-        <span class="badge {% if msg.sender == 'human' %}bg-primary{% else %}bg-secondary{% endif %}">
-          {{ msg.sender|capfirst }}
-        </span>
-        <div class="mt-1">{{ msg.text|markdownify }}</div>
-      </div>
-    {% empty %}
-      <p class="text-muted">No messages yet.</p>
-    {% endfor %}
-  </div>
+    body {
+        background: var(--secondary-gradient);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+    }
 
-  <form method="post" class="card card-body shadow-sm">
-    {% csrf_token %}
-    <div class="mb-3">
-      {{ form.user_input.label_tag }}
-      {% render_field form.user_input class="form-control" placeholder="Type your message..." %}
+    .container {
+        max-width: 900px;
+        margin: 20px auto;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Header Styling */
+    .header-section {
+        background: var(--primary-gradient);
+        padding: 24px 32px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .d-flex {
+        display: flex;
+        position: relative;
+        z-index: 1;
+    }
+
+    .justify-content-between {
+        justify-content: space-between;
+    }
+
+    .align-items-center {
+        align-items: center;
+    }
+
+    .mb-4 {
+        margin-bottom: 0 !important;
+    }
+
+    h2 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    h2 i {
+        margin-right: 12px;
+        font-size: 1.8rem;
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .btn-outline-primary {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-outline-primary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Chat Container */
+    .chat-container {
+        background: var(--chat-bg);
+        height: 500px;
+        overflow-y: auto;
+        padding: 32px;
+        position: relative;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+
+    .chat-message {
+        display: flex;
+        margin-bottom: 24px;
+        animation: slideInUp 0.4s ease-out;
+    }
+
+    .chat-message.human {
+        justify-content: flex-end;
+    }
+
+    .chat-message.ai {
+        justify-content: flex-start;
+    }
+
+    .message-wrapper {
+        max-width: 75%;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-message.human .avatar {
+        background: var(--secondary-gradient);
+        color: white;
+        order: 1;
+    }
+
+    .chat-message.ai .avatar {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .message-bubble {
+        position: relative;
+        padding: 16px 20px;
+        border-radius: 20px;
+        word-wrap: break-word;
+        box-shadow: var(--bubble-shadow);
+        backdrop-filter: blur(10px);
+        border: none;
+    }
+
+    .chat-message.human .message-bubble {
+        background: var(--secondary-gradient);
+        color: white;
+        border-bottom-right-radius: 6px;
+        margin-right: 12px;
+    }
+
+    .chat-message.ai .message-bubble {
+        background: white;
+        color: #374151;
+        border-bottom-left-radius: 6px;
+        margin-left: 12px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .message-sender {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-bottom: 4px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .chat-message.human .message-sender {
+        color: rgba(255, 255, 255, 0.8);
+        text-align: right;
+    }
+
+    .no-messages {
+        text-align: center;
+        color: #9ca3af;
+        margin-top: 100px;
+        font-size: 1.1rem;
+    }
+
+    .no-messages::before {
+        content: '\f086';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        display: block;
+        font-size: 3rem;
+        margin-bottom: 16px;
+        color: #d1d5db;
+    }
+
+    /* Input Form */
+    .input-section {
+        background: white;
+        padding: 24px 32px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .input-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        background: #f9fafb;
+        border-radius: var(--border-radius);
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+
+    .input-form:focus-within {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .flex-grow-1 {
+        flex: 1;
+        position: relative;
+    }
+
+    .flex-grow-1 label {
+        display: none;
+    }
+
+    .form-control {
+        width: 100%;
+        min-height: 44px;
+        max-height: 120px;
+        border: none;
+        background: transparent;
+        resize: none;
+        font-size: 1rem;
+        line-height: 1.5;
+        padding: 8px 12px;
+        border-radius: 8px;
+        outline: none;
+        font-family: inherit;
+        box-shadow: none;
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        min-width: 90px;
+        justify-content: center;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Custom Scrollbar */
+    .chat-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-container::-webkit-scrollbar-track {
+        background: #f1f3f5;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 3px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #3730a3 0%, #6b21a8 100%);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .container {
+            margin: 10px;
+            border-radius: var(--border-radius);
+        }
+        
+        .header-section {
+            padding: 20px 24px;
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+        }
+        
+        .chat-container {
+            height: 400px;
+            padding: 24px;
+        }
+        
+        .message-wrapper {
+            max-width: 85%;
+        }
+        
+        .input-section {
+            padding: 20px 24px;
+        }
+
+        .btn-outline-primary {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Markdown content styling */
+    .message-bubble p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .message-bubble pre {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 12px;
+        border-radius: 8px;
+        margin: 8px 0;
+        overflow-x: auto;
+    }
+
+    .message-bubble code {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Fira Code', monospace;
+    }
+
+    .chat-message.human .message-bubble pre,
+    .chat-message.human .message-bubble code {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+<div class="container">
+    <div class="header-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0"><i class="fas fa-robot me-2"></i>Chat with AI</h2>
+            <a href="{% url 'chats:new_chat' %}" class="btn btn-outline-primary">
+                <i class="fas fa-plus"></i> Start New Chat
+            </a>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Send</button>
-  </form>
+
+    <div class="chat-container" id="chat-container">
+        {% for msg in chat_history %}
+            <div class="chat-message {{ msg.sender }}">
+                {% if msg.sender == 'ai' %}
+                    <div class="message-wrapper">
+                        <div class="avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <div class="message-sender">{{ msg.sender|capfirst }}</div>
+                            <div class="message-bubble">{{ msg.text|markdownify }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="message-wrapper">
+                        <div>
+                            <div class="message-sender">{{ msg.sender|capfirst }}</div>
+                            <div class="message-bubble">{{ msg.text|markdownify }}</div>
+                        </div>
+                        <div class="avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="no-messages">No messages yet. Start the conversation!</p>
+        {% endfor %}
+    </div>
+
+    <div class="input-section">
+        <form method="post" class="input-form">
+            {% csrf_token %}
+            <div class="flex-grow-1">
+                {{ form.user_input.label_tag }}
+                {% render_field form.user_input class="form-control" placeholder="Type your message..." %}
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Send
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auto-scroll to the bottom of the chat container
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    // Auto-resize textarea based on content
+    const messageInput = document.querySelector('.form-control');
+    if (messageInput.tagName === 'TEXTAREA') {
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Handle Enter key (send message) and Shift+Enter (new line)
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.closest('form').submit();
+            }
+        });
+    }
+
+    // Scroll to bottom when new messages arrive
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Call scroll function after page loads
+    window.addEventListener('load', scrollToBottom);
+</script>
 {% endblock %}
