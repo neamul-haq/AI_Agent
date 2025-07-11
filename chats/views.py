@@ -21,14 +21,13 @@ def chat_view(request, id):
         form = ChatForm(request.POST)
         if form.is_valid():
             user_input = form.cleaned_data['user_input']
-
             recent_messages = session.messages.order_by('-created')[:3][::-1]
             ai_response, detected_issue = generate_response(user_input, recent_messages, session.id)
 
             Message.objects.create(session=session, sender='human', text=user_input)
             Message.objects.create(session=session, sender='ai', text=ai_response)
 
-            if detected_issue and detected_issue.strip().upper() != "NO_ISSUE":
+            if detected_issue and detected_issue != "NO_ISSUE":
                 # print(detected_issue)
                 IssueReport.objects.create(
                     session=session,
