@@ -21,7 +21,7 @@ def chat_view(request, id):
         form = ChatForm(request.POST)
         if form.is_valid():
             user_input = form.cleaned_data['user_input']
-            recent_messages = session.messages.order_by('-created')[:3][::-1]
+            recent_messages = session.messages.order_by('created')
             ai_response, detected_issue = generate_response(user_input, recent_messages, session.id)
 
             Message.objects.create(session=session, sender='human', text=user_input)
@@ -32,7 +32,7 @@ def chat_view(request, id):
                 IssueReport.objects.create(
                     session=session,
                     user_message=user_input,
-                    detected_issue=detected_issue
+                    detected_issue=detected_issue.content
                 )
             return redirect('chats:chat', id=session.id)
     else:

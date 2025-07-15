@@ -5,6 +5,7 @@ import uuid
 class ChatSession(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)
+    summary = models.TextField(blank=True, null=True)  # 🧠 Store memory here
 
     @property
     def messages(self):
