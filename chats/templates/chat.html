@@ -166,12 +166,13 @@
 
     .message-bubble {
         position: relative;
-        padding: 16px 20px;
+        padding: 20px 24px;
         border-radius: 20px;
         word-wrap: break-word;
         box-shadow: var(--bubble-shadow);
         backdrop-filter: blur(10px);
         border: none;
+        line-height: 1.6;
     }
 
     .chat-message.human .message-bubble {
@@ -218,6 +219,261 @@
         font-size: 3rem;
         margin-bottom: 16px;
         color: #d1d5db;
+    }
+
+    /* Enhanced AI Message Styling */
+    .chat-message.ai .message-bubble {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    /* Paragraph spacing */
+    .message-bubble p {
+        margin: 0 0 16px 0;
+        line-height: 1.7;
+    }
+
+    .message-bubble p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Headings in AI messages */
+    .message-bubble h1,
+    .message-bubble h2,
+    .message-bubble h3,
+    .message-bubble h4,
+    .message-bubble h5,
+    .message-bubble h6 {
+        margin: 24px 0 12px 0;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .message-bubble h1:first-child,
+    .message-bubble h2:first-child,
+    .message-bubble h3:first-child,
+    .message-bubble h4:first-child,
+    .message-bubble h5:first-child,
+    .message-bubble h6:first-child {
+        margin-top: 0;
+    }
+
+    .message-bubble h1 { font-size: 1.5rem; }
+    .message-bubble h2 { font-size: 1.3rem; }
+    .message-bubble h3 { font-size: 1.1rem; }
+    .message-bubble h4 { font-size: 1rem; }
+
+    /* Enhanced Lists */
+    .message-bubble ul,
+    .message-bubble ol {
+        margin: 16px 0;
+        padding-left: 0;
+        list-style: none;
+    }
+
+    .message-bubble ul li,
+    .message-bubble ol li {
+        position: relative;
+        margin-bottom: 12px;
+        padding-left: 28px;
+        line-height: 1.6;
+    }
+
+    /* Bullet points */
+    .message-bubble ul li::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 12px;
+        width: 6px;
+        height: 6px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Numbered lists */
+    .message-bubble ol {
+        counter-reset: list-counter;
+    }
+
+    .message-bubble ol li {
+        counter-increment: list-counter;
+    }
+
+    .message-bubble ol li::before {
+        content: counter(list-counter);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border-radius: 50%;
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    /* Nested lists */
+    .message-bubble ul ul,
+    .message-bubble ol ol,
+    .message-bubble ul ol,
+    .message-bubble ol ul {
+        margin: 8px 0;
+        padding-left: 20px;
+    }
+
+    .message-bubble ul ul li::before {
+        width: 4px;
+        height: 4px;
+        background: #6b7280;
+    }
+
+    .message-bubble ol ol li::before {
+        background: #6b7280;
+        font-size: 10px;
+    }
+
+    /* Code blocks */
+    .message-bubble pre {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 16px;
+        border-radius: 12px;
+        margin: 16px 0;
+        overflow-x: auto;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .message-bubble code {
+        background: #f1f5f9;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        font-size: 13px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .message-bubble pre code {
+        background: transparent;
+        padding: 0;
+        border: none;
+        font-size: 14px;
+    }
+
+    /* Blockquotes */
+    .message-bubble blockquote {
+        margin: 16px 0;
+        padding: 16px 20px;
+        background: #f8fafc;
+        border-left: 4px solid #4f46e5;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: #4b5563;
+    }
+
+    /* Tables */
+    .message-bubble table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 14px;
+    }
+
+    .message-bubble th,
+    .message-bubble td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .message-bubble th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    /* Horizontal rules */
+    .message-bubble hr {
+        margin: 24px 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+    }
+
+    /* Strong and emphasis */
+    .message-bubble strong {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .message-bubble em {
+        font-style: italic;
+        color: #4b5563;
+    }
+
+    /* Links */
+    .message-bubble a {
+        color: #4f46e5;
+        text-decoration: underline;
+        text-decoration-color: #4f46e5;
+        text-underline-offset: 2px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .message-bubble a:hover {
+        color: #3730a3;
+        text-decoration-color: #3730a3;
+        background-color: rgba(79, 70, 229, 0.1);
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+
+    .message-bubble a:visited {
+        color: #7c3aed;
+    }
+
+    /* Ensure links are clickable in human messages */
+    .chat-message.human .message-bubble a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration-color: rgba(255, 255, 255, 0.7);
+    }
+
+    .chat-message.human .message-bubble a:hover {
+        color: white;
+        text-decoration-color: white;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Human message overrides */
+    .chat-message.human .message-bubble pre,
+    .chat-message.human .message-bubble code {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .chat-message.human .message-bubble blockquote {
+        background: rgba(255, 255, 255, 0.1);
+        border-left-color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .chat-message.human .message-bubble ul li::before {
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .chat-message.human .message-bubble ol li::before {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
     }
 
     /* Input Form */
@@ -298,6 +554,90 @@
         transform: translateY(0);
     }
 
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Loading Animation */
+    .loading-dots {
+        display: inline-block;
+        position: relative;
+        width: 40px;
+        height: 20px;
+    }
+
+    .loading-dots div {
+        position: absolute;
+        top: 8px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #9ca3af;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+    }
+
+    .loading-dots div:nth-child(1) {
+        left: 8px;
+        animation: loading1 0.6s infinite;
+    }
+
+    .loading-dots div:nth-child(2) {
+        left: 8px;
+        animation: loading2 0.6s infinite;
+    }
+
+    .loading-dots div:nth-child(3) {
+        left: 18px;
+        animation: loading2 0.6s infinite;
+    }
+
+    .loading-dots div:nth-child(4) {
+        left: 28px;
+        animation: loading3 0.6s infinite;
+    }
+
+    @keyframes loading1 {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes loading3 {
+        0% { transform: scale(1); }
+        100% { transform: scale(0); }
+    }
+
+    @keyframes loading2 {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(10px, 0); }
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+        animation: slideInUp 0.4s ease-out;
+    }
+
+    .typing-indicator .avatar {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .typing-bubble {
+        background: white;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        border-bottom-left-radius: 6px;
+        padding: 16px 20px;
+        box-shadow: var(--bubble-shadow);
+        backdrop-filter: blur(10px);
+    }
+
     /* Animations */
     @keyframes slideInUp {
         from {
@@ -360,32 +700,20 @@
             padding: 10px 16px;
             font-size: 0.9rem;
         }
+
+        .message-bubble {
+            padding: 16px 20px;
+        }
     }
 
-    /* Markdown content styling */
-    .message-bubble p {
-        margin: 0;
-        line-height: 1.6;
-    }
-
-    .message-bubble pre {
-        background: rgba(0, 0, 0, 0.1);
+    /* Error message styling */
+    .error-message {
+        color: #dc2626;
+        background: #fee2e2;
         padding: 12px;
         border-radius: 8px;
-        margin: 8px 0;
-        overflow-x: auto;
-    }
-
-    .message-bubble code {
-        background: rgba(0, 0, 0, 0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: 'Fira Code', monospace;
-    }
-
-    .chat-message.human .message-bubble pre,
-    .chat-message.human .message-bubble code {
-        background: rgba(255, 255, 255, 0.2);
+        margin-bottom: 16px;
+        border: 1px solid #fecaca;
     }
 </style>
 
@@ -430,13 +758,19 @@
     </div>
 
     <div class="input-section">
-        <form method="post" class="input-form">
-            {% csrf_token %}
+        <div id="error-container"></div>
+        <form id="chat-form" class="input-form">
             <div class="flex-grow-1">
-                {{ form.user_input.label_tag }}
-                {% render_field form.user_input class="form-control" placeholder="Type your message..." %}
+                <label for="message-input" style="display: none;">Your message</label>
+                <textarea 
+                    id="message-input" 
+                    class="form-control" 
+                    placeholder="Type your message..."
+                    rows="1"
+                    required
+                ></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" id="send-btn">
                 <i class="fas fa-paper-plane"></i> Send
             </button>
         </form>
@@ -444,33 +778,196 @@
 </div>
 
 <script>
-    // Auto-scroll to the bottom of the chat container
+    // Global variables
     const chatContainer = document.getElementById('chat-container');
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const errorContainer = document.getElementById('error-container');
+    const sessionId = '{{ session.id }}';
 
-    // Auto-resize textarea based on content
-    const messageInput = document.querySelector('.form-control');
-    if (messageInput.tagName === 'TEXTAREA') {
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-        });
-
-        // Handle Enter key (send message) and Shift+Enter (new line)
-        messageInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.closest('form').submit();
-            }
-        });
-    }
-
-    // Scroll to bottom when new messages arrive
+    // Auto-scroll to the bottom of the chat container
     function scrollToBottom() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // Call scroll function after page loads
+    // Show error message
+    function showError(message) {
+        errorContainer.innerHTML = `<div class="error-message">${message}</div>`;
+        setTimeout(() => {
+            errorContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    // Create message HTML with proper link handling
+    function createMessageHTML(message, sender) {
+        const messageClass = sender === 'ai' ? 'ai' : 'human';
+        const avatar = sender === 'ai' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
+        
+        // Ensure links are properly formatted and clickable
+        const processedMessage = message.replace(/href="([^"]*)"(?![^>]*>)/g, 'href="$1" target="_blank" rel="noopener noreferrer"');
+        
+        if (sender === 'ai') {
+            return `
+                <div class="chat-message ${messageClass}">
+                    <div class="message-wrapper">
+                        <div class="avatar">${avatar}</div>
+                        <div>
+                            <div class="message-sender">${sender.charAt(0).toUpperCase() + sender.slice(1)}</div>
+                            <div class="message-bubble">${processedMessage}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="chat-message ${messageClass}">
+                    <div class="message-wrapper">
+                        <div>
+                            <div class="message-sender">${sender.charAt(0).toUpperCase() + sender.slice(1)}</div>
+                            <div class="message-bubble">${processedMessage}</div>
+                        </div>
+                        <div class="avatar">${avatar}</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Create typing indicator
+    function createTypingIndicator() {
+        return `
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="typing-bubble">
+                    <div class="loading-dots">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+        const noMessages = chatContainer.querySelector('.no-messages');
+        if (noMessages) {
+            noMessages.style.display = 'none';
+        }
+        
+        chatContainer.insertAdjacentHTML('beforeend', createTypingIndicator());
+        scrollToBottom();
+    }
+
+    // Hide typing indicator
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    // Send message function
+    async function sendMessage(message) {
+        try {
+            const response = await fetch(`/chat/${sessionId}/send/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Network error occurred');
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // Remove "no messages" text if it exists
+                const noMessages = chatContainer.querySelector('.no-messages');
+                if (noMessages) {
+                    noMessages.remove();
+                }
+
+                // Add user message
+                chatContainer.insertAdjacentHTML('beforeend', createMessageHTML(data.user_message.text, 'human'));
+                scrollToBottom();
+
+                // Show typing indicator
+                showTypingIndicator();
+
+                // Simulate AI thinking time (optional)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Hide typing indicator and add AI response
+                hideTypingIndicator();
+                chatContainer.insertAdjacentHTML('beforeend', createMessageHTML(data.ai_message.text, 'ai'));
+                scrollToBottom();
+            } else {
+                throw new Error('Failed to send message');
+            }
+        } catch (error) {
+            hideTypingIndicator();
+            showError(error.message);
+            console.error('Error sending message:', error);
+        }
+    }
+
+    // Form submission handler
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        // Disable form
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        messageInput.disabled = true;
+
+        // Clear input
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+
+        // Send message
+        await sendMessage(message);
+
+        // Re-enable form
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+        messageInput.disabled = false;
+        messageInput.focus();
+    });
+
+    // Auto-resize textarea based on content
+    messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Handle Enter key (send message) and Shift+Enter (new line)
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    // Initial setup
+    document.addEventListener('DOMContentLoaded', function() {
+        scrollToBottom();
+        messageInput.focus();
+    });
+
+    // Scroll to bottom when page loads
     window.addEventListener('load', scrollToBottom);
 </script>
 {% endblock %}

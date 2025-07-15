@@ -64,17 +64,16 @@ def generate_response(user_input, history, session_id):
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", """
-You are the shop assistant of this shopping site.
+You are the smart assistant of this shopping site.
 Here are our products: {products}
 
 Please help customers with their questions about our products, provide recommendations, 
-answer questions about features, pricing, and availability.
+answer questions shortly about features, pricing, and availability.
 """)
     ] + summary_memory.chat_memory.messages)
 
     chain = prompt | model
 
-    # Generate response
     ai_response = chain.invoke({"products": retriever.invoke(user_input)})
 
     # Add AI response to memory
@@ -85,7 +84,7 @@ answer questions about features, pricing, and availability.
     session.summary = summary_memory.buffer
     session.save()
 
-    # Detection of issue
+
     issue_result = issue_chain.invoke({"message": user_input})
     detected_issue = issue_result  # Get the actual string from AIMessage
 
