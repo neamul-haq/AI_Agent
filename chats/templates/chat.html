@@ -786,6 +786,61 @@
     const errorContainer = document.getElementById('error-container');
     const sessionId = '{{ session.id }}';
 
+    // Enhanced markdown processing function
+    function processMarkdown(text) {
+        // If the text is already HTML (from Django's markdownify), return as is
+        if (text.includes('<p>') || text.includes('<h1>') || text.includes('<ul>') || text.includes('<ol>')) {
+            return text;
+        }
+        
+        // Basic markdown processing for JavaScript
+        let html = text;
+        
+        // Headers
+        html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+        
+        // Bold and italic
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Code blocks
+        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+        
+        // Process numbered lists
+        html = html.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/s, '<ol>$1</ol>');
+        
+        // Process bullet lists
+        html = html.replace(/^[-*+]\s+(.+)$/gm, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/s, function(match) {
+            if (!match.includes('<ol>')) {
+                return '<ul>' + match + '</ul>';
+            }
+            return match;
+        });
+        
+        // Process paragraphs
+        html = html.replace(/\n\n/g, '</p><p>');
+        html = '<p>' + html + '</p>';
+        
+        // Clean up empty paragraphs
+        html = html.replace(/<p><\/p>/g, '');
+        html = html.replace(/<p>(<[uo]l>)/g, '$1');
+        html = html.replace(/(<\/[uo]l>)<\/p>/g, '$1');
+        html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+        html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+        html = html.replace(/<p>(<pre>)/g, '$1');
+        html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+        
+        return html;
+    }
+
     // Auto-scroll to the bottom of the chat container
     function scrollToBottom() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -799,13 +854,19 @@
         }, 5000);
     }
 
-    // Create message HTML with proper link handling
+    // Create message HTML with proper link handling and markdown processing
     function createMessageHTML(message, sender) {
         const messageClass = sender === 'ai' ? 'ai' : 'human';
         const avatar = sender === 'ai' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
         
+        // Process markdown for AI messages
+        let processedMessage = message;
+        if (sender === 'ai') {
+            processedMessage = processMarkdown(message);
+        }
+        
         // Ensure links are properly formatted and clickable
-        const processedMessage = message.replace(/href="([^"]*)"(?![^>]*>)/g, 'href="$1" target="_blank" rel="noopener noreferrer"');
+        processedMessage = processedMessage.replace(/href="([^"]*)"(?![^>]*>)/g, 'href="$1" target="_blank" rel="noopener noreferrer"');
         
         if (sender === 'ai') {
             return `

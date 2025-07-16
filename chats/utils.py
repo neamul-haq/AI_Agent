@@ -12,7 +12,7 @@ from chats.models import ChatSession
 load_dotenv()
 # model = OllamaLLM(model="llama3.2")
 model = ChatGroq(
-    model="llama3-70b-8192",
+    model="gemma2-9b-it",
     api_key=os.getenv("GROQ_API_KEY")
 )
 

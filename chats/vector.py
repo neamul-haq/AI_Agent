@@ -4,8 +4,8 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
 db_location = "./chroma_shopping_db"
-# if os.path.exists(db_location):
-#     shutil.rmtree(db_location)
+if os.path.exists(db_location):
+    shutil.rmtree(db_location)
 # Fetch products
 response = requests.get("https://fakestoreapi.in/api/products")
 data = response.json()
@@ -34,12 +34,10 @@ if add_documents:
     for product in products:
         content = (
             f"Product Title: {product['title']}\n"
-            f"Product Brand: {product.get('brand', 'N/A')}\n"
+            f"Product Price: ${product['price']}"
             f"Product Model: {product.get('model', 'N/A')}\n"
-            f"Product Color: {product.get('color', 'N/A')}\n"
             f"Product Category: {product['category']}\n"
             f"Product Description: {product['description']}\n"
-            f"Product Price: ${product['price']}"
         )
 
         documents.append(
