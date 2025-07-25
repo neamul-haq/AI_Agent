@@ -4,8 +4,8 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
 db_location = "./chroma_shopping_db"
-if os.path.exists(db_location):
-    shutil.rmtree(db_location)
+# if os.path.exists(db_location):
+#     shutil.rmtree(db_location)
 # Fetch products
 response = requests.get("https://fakestoreapi.in/api/products")
 data = response.json()
@@ -13,8 +13,6 @@ products = data.get("products", [])
 
 # Embeddings
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
-
-
 
 add_documents = not os.path.exists(db_location)
 
